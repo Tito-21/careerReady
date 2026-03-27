@@ -1,6 +1,6 @@
 "use client"
 
-import { createContext, useContext, useState, useCallback, type ReactNode } from "react"
+import { createContext, useContext, useState, useEffect, type ReactNode } from "react"
 
 export type UserRole = "student" | "coach" | "admin"
 
@@ -16,8 +16,8 @@ interface AuthContextType {
   user: User | null
   isAuthenticated: boolean
   login: (email: string, password: string) => Promise<boolean>
-  register: (name: string, email: string, password: string, role: UserRole) => Promise<boolean>
   logout: () => void
+  loading: boolean
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined)
@@ -31,38 +31,42 @@ const mockUsers: (User & { password: string })[] = [
 
 export function AuthProvider({ children }: { children: ReactNode }) {
   const [user, setUser] = useState<User | null>(null)
+  const [loading, setLoading] = useState(true)
 
-  const login = useCallback(async (email: string, password: string): Promise<boolean> => {
+  // Check for existing user session on mount
+  useEffect(() => {
+    const storedUser = localStorage.getItem('user')
+    if (storedUser) {
+      try {
+        const parsedUser = JSON.parse(storedUser)
+        setUser(parsedUser)
+      } catch (error) {
+        console.error('Failed to parse stored user:', error)
+        localStorage.removeItem('user')
+      }
+    }
+    setLoading(false)
+  }, [])
+
+  const login = async (email: string, password: string): Promise<boolean> => {
     const foundUser = mockUsers.find((u) => u.email === email && u.password === password)
     if (foundUser) {
       const { password: _, ...userWithoutPassword } = foundUser
       setUser(userWithoutPassword)
+      // Store in localStorage for persistence
+      localStorage.setItem('user', JSON.stringify(userWithoutPassword))
       return true
     }
     return false
-  }, [])
+  }
 
-  const register = useCallback(
-    async (name: string, email: string, password: string, role: UserRole): Promise<boolean> => {
-      const newUser: User = {
-        id: String(mockUsers.length + 1),
-        name,
-        email,
-        role,
-      }
-      mockUsers.push({ ...newUser, password })
-      setUser(newUser)
-      return true
-    },
-    []
-  )
-
-  const logout = useCallback(() => {
+  const logout = () => {
     setUser(null)
-  }, [])
+    localStorage.removeItem('user')
+  }
 
   return (
-    <AuthContext.Provider value={{ user, isAuthenticated: !!user, login, register, logout }}>
+    <AuthContext.Provider value={{ user, isAuthenticated: !!user, login, logout, loading }}>
       {children}
     </AuthContext.Provider>
   )

@@ -152,8 +152,8 @@ export const careerReadinessMetrics = {
 export const mockStudents = [
   {
     id: "1",
-    name: "John Doe",
-    email: "john.doe@alu.edu",
+    name: "Tito",
+    email: "tito@alu.edu",
     program: "Software Engineering",
     year: 3,
     readinessScore: 72,

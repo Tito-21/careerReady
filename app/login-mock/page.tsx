@@ -3,14 +3,20 @@
 import { useState } from "react"
 import Link from "next/link"
 import { useRouter } from "next/navigation"
-import { createClient } from "@/lib/supabase/client"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { GraduationCap, Eye, EyeOff, AlertCircle } from "lucide-react"
 
-export default function LoginPage() {
+// Mock users for development
+const mockUsers = [
+  { id: "1", name: "Tito", email: "tito@alu.edu", password: "password123", role: "student" },
+  { id: "2", name: "Mugisha Chris", email: "mugisha.chris@alu.edu", password: "password123", role: "coach" },
+  { id: "3", name: "Admin User", email: "admin@alu.edu", password: "password123", role: "admin" },
+]
+
+export default function MockLoginPage() {
   const router = useRouter()
   const [email, setEmail] = useState("")
   const [password, setPassword] = useState("")
@@ -24,17 +30,22 @@ export default function LoginPage() {
     setLoading(true)
 
     try {
-      const supabase = createClient()
-      const { error: signInError } = await supabase.auth.signInWithPassword({
-        email,
-        password,
-      })
-
-      if (signInError) {
-        setError(signInError.message)
-      } else {
+      // Check against mock users
+      const user = mockUsers.find(u => u.email === email && u.password === password)
+      
+      if (user) {
+        // Store user in localStorage for persistence
+        localStorage.setItem('user', JSON.stringify({
+          id: user.id,
+          name: user.name,
+          email: user.email,
+          role: user.role
+        }))
+        
         router.push("/dashboard")
         router.refresh()
+      } else {
+        setError("Invalid email or password")
       }
     } catch {
       setError("An error occurred. Please try again.")
@@ -116,31 +127,6 @@ export default function LoginPage() {
               </Button>
             </form>
 
-            <div className="mt-6">
-              <div className="relative">
-                <div className="absolute inset-0 flex items-center">
-                  <span className="w-full border-t border-border" />
-                </div>
-                <div className="relative flex justify-center text-xs uppercase">
-                  <span className="bg-card px-2 text-muted-foreground">Test accounts</span>
-                </div>
-              </div>
-
-              <div className="mt-4 space-y-2 text-sm">
-                <div className="p-3 rounded-lg bg-muted">
-                  <p className="font-medium text-foreground">Student (Tito)</p>
-                  <p className="text-muted-foreground">tito@alu.edu</p>
-                </div>
-                <div className="p-3 rounded-lg bg-muted">
-                  <p className="font-medium text-foreground">Career Coach (Mugisha Chris)</p>
-                  <p className="text-muted-foreground">mugisha.chris@alu.edu</p>
-                </div>
-                <div className="p-3 rounded-lg bg-muted">
-                  <p className="font-medium text-foreground">Admin</p>
-                  <p className="text-muted-foreground">admin@alu.edu</p>
-                </div>
-              </div>
-            </div>
 
             <p className="mt-6 text-center text-sm text-muted-foreground">
               {"Don't have an account?"}{" "}
