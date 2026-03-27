@@ -116,32 +116,6 @@ export default function LoginPage() {
               </Button>
             </form>
 
-            <div className="mt-6">
-              <div className="relative">
-                <div className="absolute inset-0 flex items-center">
-                  <span className="w-full border-t border-border" />
-                </div>
-                <div className="relative flex justify-center text-xs uppercase">
-                  <span className="bg-card px-2 text-muted-foreground">Test accounts</span>
-                </div>
-              </div>
-
-              <div className="mt-4 space-y-2 text-sm">
-                <div className="p-3 rounded-lg bg-muted">
-                  <p className="font-medium text-foreground">Student (Tito)</p>
-                  <p className="text-muted-foreground">tito@alu.edu</p>
-                </div>
-                <div className="p-3 rounded-lg bg-muted">
-                  <p className="font-medium text-foreground">Career Coach (Mugisha Chris)</p>
-                  <p className="text-muted-foreground">mugisha.chris@alu.edu</p>
-                </div>
-                <div className="p-3 rounded-lg bg-muted">
-                  <p className="font-medium text-foreground">Admin</p>
-                  <p className="text-muted-foreground">admin@alu.edu</p>
-                </div>
-              </div>
-            </div>
-
             <p className="mt-6 text-center text-sm text-muted-foreground">
               {"Don't have an account?"}{" "}
               <Link href="/register" className="text-primary hover:underline font-medium">
